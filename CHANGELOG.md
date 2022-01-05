@@ -1,11 +1,9 @@
-## TODO: v0.0.1 - 20??-??-?? - Moving
+## TODO: v0.0.1 - 2022-01-05 - Moving
 
 #### Nothworthy Changes
 
 * Initial extraction of DigitalOceanProvider from octoDNS core
 
-TODO: anything else
-
 #### Stuff
 
-TODO: anything else
+Nothing
