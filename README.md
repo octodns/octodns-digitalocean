@@ -1,4 +1,4 @@
-## DigitalOceanProvider provider for octoDNS
+## DigitalOcean provider for octoDNS
 
 An [octoDNS](https://github.com/octodns/octodns/) provider that targets [DigitalOcean](https://docs.digitalocean.com/products/networking/dns/).
 
@@ -27,7 +27,7 @@ octodns_digitalocean==0.0.1
 ```
 # Start with the latest/specific versions and don't just copy what's here
 -e git+https://git@github.com/octodns/octodns.git@9da19749e28f68407a1c246dfdf65663cdc1c422#egg=octodns
--e git+https://git@github.com/octodns/octodns_digitalocean.git@ec9661f8b335241ae4746eea467a8509205e6a30#egg=octodns_powerdns
+-e git+https://git@github.com/octodns/octodns_digitalocean.git@ec9661f8b335241ae4746eea467a8509205e6a30#egg=octodns_digitalocean
 ```
 
 ### Configuration
