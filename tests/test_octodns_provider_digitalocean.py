@@ -18,7 +18,7 @@ from octodns_digitalocean import DigitalOceanClientNotFound, \
 
 class TestDigitalOceanProvider(TestCase):
     expected = Zone('unit.tests.', [])
-    source = YamlProvider('test', join(dirname(__file__), 'tests', 'config'))
+    source = YamlProvider('test', join(dirname(__file__), 'config'))
     source.populate(expected)
 
     # Our test suite differs a bit, add our NS and remove the simple one
@@ -47,7 +47,7 @@ class TestDigitalOceanProvider(TestCase):
             with self.assertRaises(Exception) as ctx:
                 zone = Zone('unit.tests.', [])
                 provider.populate(zone)
-            self.assertEquals('Unauthorized', str(ctx.exception))
+            self.assertEqual('Unauthorized', str(ctx.exception))
 
         # General error
         with requests_mock() as mock:
@@ -56,7 +56,7 @@ class TestDigitalOceanProvider(TestCase):
             with self.assertRaises(HTTPError) as ctx:
                 zone = Zone('unit.tests.', [])
                 provider.populate(zone)
-            self.assertEquals(502, ctx.exception.response.status_code)
+            self.assertEqual(502, ctx.exception.response.status_code)
 
         # Non-existent zone doesn't populate anything
         with requests_mock() as mock:
@@ -66,7 +66,7 @@ class TestDigitalOceanProvider(TestCase):
 
             zone = Zone('unit.tests.', [])
             provider.populate(zone)
-            self.assertEquals(set(), zone.records)
+            self.assertEqual(set(), zone.records)
 
         # No diffs == no changes
         with requests_mock() as mock:
@@ -79,14 +79,14 @@ class TestDigitalOceanProvider(TestCase):
 
             zone = Zone('unit.tests.', [])
             provider.populate(zone)
-            self.assertEquals(14, len(zone.records))
+            self.assertEqual(14, len(zone.records))
             changes = self.expected.changes(zone, provider)
-            self.assertEquals(0, len(changes))
+            self.assertEqual(0, len(changes))
 
         # 2nd populate makes no network calls/all from cache
         again = Zone('unit.tests.', [])
         provider.populate(again)
-        self.assertEquals(14, len(again.records))
+        self.assertEqual(14, len(again.records))
 
         # bust the cache
         del provider._zone_records[zone.name]
@@ -160,8 +160,8 @@ class TestDigitalOceanProvider(TestCase):
 
         # No root NS, no ignored, no excluded, no unsupported
         n = len(self.expected.records) - 10
-        self.assertEquals(n, len(plan.changes))
-        self.assertEquals(n, provider.apply(plan))
+        self.assertEqual(n, len(plan.changes))
+        self.assertEqual(n, provider.apply(plan))
         self.assertFalse(plan.exists)
 
         provider._client._request.assert_has_calls([
@@ -214,7 +214,7 @@ class TestDigitalOceanProvider(TestCase):
                 'port': 30
             }),
         ])
-        self.assertEquals(26, provider._client._request.call_count)
+        self.assertEqual(26, provider._client._request.call_count)
 
         provider._client._request.reset_mock()
 
@@ -255,8 +255,8 @@ class TestDigitalOceanProvider(TestCase):
 
         plan = provider.plan(wanted)
         self.assertTrue(plan.exists)
-        self.assertEquals(2, len(plan.changes))
-        self.assertEquals(2, provider.apply(plan))
+        self.assertEqual(2, len(plan.changes))
+        self.assertEqual(2, provider.apply(plan))
         # recreate for update, and delete for the 2 parts of the other
         provider._client._request.assert_has_calls([
             call('POST', '/domains/unit.tests/records', data={
