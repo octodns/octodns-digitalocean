@@ -81,7 +81,7 @@ class TestDigitalOceanProvider(TestCase):
             provider.populate(zone)
             self.assertEqual(14, len(zone.records))
             changes = self.expected.changes(zone, provider)
-            self.assertEqual(0, len(changes))
+            self.assertEqual(1, len(changes))
 
         # 2nd populate makes no network calls/all from cache
         again = Zone('unit.tests.', [])
@@ -158,8 +158,8 @@ class TestDigitalOceanProvider(TestCase):
         ]
         plan = provider.plan(self.expected)
 
-        # No root NS, no ignored, no excluded, no unsupported
-        n = len(self.expected.records) - 10
+        # No ignored, no excluded, no unsupported
+        n = len(self.expected.records) - 9
         self.assertEqual(n, len(plan.changes))
         self.assertEqual(n, provider.apply(plan))
         self.assertFalse(plan.exists)
@@ -186,6 +186,16 @@ class TestDigitalOceanProvider(TestCase):
                 'flags': 0, 'name': '@',
                 'tag': 'issue',
                 'ttl': 3600, 'type': 'CAA'}),
+            call('POST', '/domains/unit.tests/records', data={
+                'data': 'ns1.unit.tests.',
+                'name': '@',
+                'ttl': 3600, 'type': 'NS'
+            }),
+            call('POST', '/domains/unit.tests/records', data={
+                'data': 'ns2.unit.tests.',
+                'name': '@',
+                'ttl': 3600, 'type': 'NS'
+            }),
             call('POST', '/domains/unit.tests/records', data={
                 'name': '_imap._tcp',
                 'weight': 0,
@@ -214,7 +224,7 @@ class TestDigitalOceanProvider(TestCase):
                 'port': 30
             }),
         ])
-        self.assertEqual(26, provider._client._request.call_count)
+        self.assertEqual(28, provider._client._request.call_count)
 
         provider._client._request.reset_mock()
 

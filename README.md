@@ -46,6 +46,10 @@ providers:
 
 DigitalOceanProvider supports A, AAAA, CAA, CNAME, MX, NS, TXT, and SRV
 
+#### Root NS Records
+
+DigitalOceanProvider supports full root NS record management.
+
 #### Dynamic
 
 DigitalOceanProvider does not support dynamic records.
