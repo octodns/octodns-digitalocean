@@ -10,7 +10,7 @@ from octodns.record import Record
 from octodns.provider import ProviderException
 from octodns.provider.base import BaseProvider
 
-__VERSION__ = '0.0.1'
+__VERSION__ = '0.0.2'
 
 
 class DigitalOceanClientException(ProviderException):
@@ -109,6 +109,7 @@ class DigitalOceanClient(object):
 class DigitalOceanProvider(BaseProvider):
     SUPPORTS_GEO = False
     SUPPORTS_DYNAMIC = False
+    SUPPORTS_ROOT_NS = True
     SUPPORTS = set(('A', 'AAAA', 'CAA', 'CNAME', 'MX', 'NS', 'TXT', 'SRV'))
 
     def __init__(self, id, token, *args, **kwargs):
