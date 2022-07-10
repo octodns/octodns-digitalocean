@@ -18,13 +18,11 @@ class DigitalOceanClientException(ProviderException):
 
 
 class DigitalOceanClientNotFound(DigitalOceanClientException):
-
     def __init__(self):
         super(DigitalOceanClientNotFound, self).__init__('Not Found')
 
 
 class DigitalOceanClientUnauthorized(DigitalOceanClientException):
-
     def __init__(self):
         super(DigitalOceanClientUnauthorized, self).__init__('Unauthorized')
 
@@ -53,8 +51,9 @@ class DigitalOceanClient(object):
 
     def domain_create(self, name):
         # Digitalocean requires an IP on zone creation
-        self._request('POST', '/domains', data={'name': name,
-                                                'ip_address': '192.0.2.1'})
+        self._request(
+            'POST', '/domains', data={'name': name, 'ip_address': '192.0.2.1'}
+        )
 
         # After the zone is created, immediately delete the record
         records = self.records(name)
@@ -124,7 +123,7 @@ class DigitalOceanProvider(BaseProvider):
         return {
             'ttl': records[0]['ttl'],
             'type': _type,
-            'values': [r['data'] for r in records]
+            'values': [r['data'] for r in records],
         }
 
     _data_for_A = _data_for_multiple
@@ -133,92 +132,84 @@ class DigitalOceanProvider(BaseProvider):
     def _data_for_CAA(self, _type, records):
         values = []
         for record in records:
-            values.append({
-                'flags': record['flags'],
-                'tag': record['tag'],
-                'value': record['data'],
-            })
-        return {
-            'ttl': records[0]['ttl'],
-            'type': _type,
-            'values': values
-        }
+            values.append(
+                {
+                    'flags': record['flags'],
+                    'tag': record['tag'],
+                    'value': record['data'],
+                }
+            )
+        return {'ttl': records[0]['ttl'], 'type': _type, 'values': values}
 
     def _data_for_CNAME(self, _type, records):
         record = records[0]
         return {
             'ttl': record['ttl'],
             'type': _type,
-            'value': f'{record["data"]}.'
+            'value': f'{record["data"]}.',
         }
 
     def _data_for_MX(self, _type, records):
         values = []
         for record in records:
-            values.append({
-                'preference': record['priority'],
-                'exchange': f'{record["data"]}.'
-            })
-        return {
-            'ttl': records[0]['ttl'],
-            'type': _type,
-            'values': values
-        }
+            values.append(
+                {
+                    'preference': record['priority'],
+                    'exchange': f'{record["data"]}.',
+                }
+            )
+        return {'ttl': records[0]['ttl'], 'type': _type, 'values': values}
 
     def _data_for_NS(self, _type, records):
         values = []
         for record in records:
             values.append(f'{record["data"]}.')
-        return {
-            'ttl': records[0]['ttl'],
-            'type': _type,
-            'values': values,
-        }
+        return {'ttl': records[0]['ttl'], 'type': _type, 'values': values}
 
     def _data_for_SRV(self, _type, records):
         values = []
         for record in records:
             target = f'{record["data"]}.' if record['data'] != "." else "."
-            values.append({
-                'port': record['port'],
-                'priority': record['priority'],
-                'target': target,
-                'weight': record['weight']
-            })
-        return {
-            'type': _type,
-            'ttl': records[0]['ttl'],
-            'values': values
-        }
+            values.append(
+                {
+                    'port': record['port'],
+                    'priority': record['priority'],
+                    'target': target,
+                    'weight': record['weight'],
+                }
+            )
+        return {'type': _type, 'ttl': records[0]['ttl'], 'values': values}
 
     def _data_for_TXT(self, _type, records):
         values = [value['data'].replace(';', '\\;') for value in records]
-        return {
-            'ttl': records[0]['ttl'],
-            'type': _type,
-            'values': values
-        }
+        return {'ttl': records[0]['ttl'], 'type': _type, 'values': values}
 
     def zone_records(self, zone):
         if zone.name not in self._zone_records:
             try:
-                self._zone_records[zone.name] = \
-                    self._client.records(zone.name[:-1])
+                self._zone_records[zone.name] = self._client.records(
+                    zone.name[:-1]
+                )
             except DigitalOceanClientNotFound:
                 return []
 
         return self._zone_records[zone.name]
 
     def populate(self, zone, target=False, lenient=False):
-        self.log.debug('populate: name=%s, target=%s, lenient=%s', zone.name,
-                       target, lenient)
+        self.log.debug(
+            'populate: name=%s, target=%s, lenient=%s',
+            zone.name,
+            target,
+            lenient,
+        )
 
         values = defaultdict(lambda: defaultdict(list))
         for record in self.zone_records(zone):
             _type = record['type']
             if _type not in self.SUPPORTS:
-                self.log.warning('populate: skipping unsupported %s record',
-                                 _type)
+                self.log.warning(
+                    'populate: skipping unsupported %s record', _type
+                )
                 continue
             values[record['name']][record['type']].append(record)
 
@@ -226,13 +217,21 @@ class DigitalOceanProvider(BaseProvider):
         for name, types in values.items():
             for _type, records in types.items():
                 data_for = getattr(self, f'_data_for_{_type}')
-                record = Record.new(zone, name, data_for(_type, records),
-                                    source=self, lenient=lenient)
+                record = Record.new(
+                    zone,
+                    name,
+                    data_for(_type, records),
+                    source=self,
+                    lenient=lenient,
+                )
                 zone.add_record(record, lenient=lenient)
 
         exists = zone.name in self._zone_records
-        self.log.info('populate:   found %s records, exists=%s',
-                      len(zone.records) - before, exists)
+        self.log.info(
+            'populate:   found %s records, exists=%s',
+            len(zone.records) - before,
+            exists,
+        )
         return exists
 
     def _params_for_multiple(self, record):
@@ -241,7 +240,7 @@ class DigitalOceanProvider(BaseProvider):
                 'data': value,
                 'name': record.name,
                 'ttl': record.ttl,
-                'type': record._type
+                'type': record._type,
             }
 
     _params_for_A = _params_for_multiple
@@ -256,7 +255,7 @@ class DigitalOceanProvider(BaseProvider):
                 'name': record.name,
                 'tag': value.tag,
                 'ttl': record.ttl,
-                'type': record._type
+                'type': record._type,
             }
 
     def _params_for_single(self, record):
@@ -264,7 +263,7 @@ class DigitalOceanProvider(BaseProvider):
             'data': record.value,
             'name': record.name,
             'ttl': record.ttl,
-            'type': record._type
+            'type': record._type,
         }
 
     _params_for_CNAME = _params_for_single
@@ -276,7 +275,7 @@ class DigitalOceanProvider(BaseProvider):
                 'name': record.name,
                 'priority': value.preference,
                 'ttl': record.ttl,
-                'type': record._type
+                'type': record._type,
             }
 
     def _params_for_SRV(self, record):
@@ -288,7 +287,7 @@ class DigitalOceanProvider(BaseProvider):
                 'priority': value.priority,
                 'ttl': record.ttl,
                 'type': record._type,
-                'weight': value.weight
+                'weight': value.weight,
             }
 
     def _params_for_TXT(self, record):
@@ -299,7 +298,7 @@ class DigitalOceanProvider(BaseProvider):
                 'data': value.replace('\\;', ';'),
                 'name': record.name,
                 'ttl': record.ttl,
-                'type': record._type
+                'type': record._type,
             }
 
     def _apply_Create(self, change):
@@ -316,15 +315,18 @@ class DigitalOceanProvider(BaseProvider):
         existing = change.existing
         zone = existing.zone
         for record in self.zone_records(zone):
-            if existing.name == record['name'] and \
-               existing._type == record['type']:
+            if (
+                existing.name == record['name']
+                and existing._type == record['type']
+            ):
                 self._client.record_delete(zone.name[:-1], record['id'])
 
     def _apply(self, plan):
         desired = plan.desired
         changes = plan.changes
-        self.log.debug('_apply: zone=%s, len(changes)=%d', desired.name,
-                       len(changes))
+        self.log.debug(
+            '_apply: zone=%s, len(changes)=%d', desired.name, len(changes)
+        )
 
         domain_name = desired.name[:-1]
         try:
