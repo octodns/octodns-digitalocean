@@ -19,12 +19,12 @@ class DigitalOceanClientException(ProviderException):
 
 class DigitalOceanClientNotFound(DigitalOceanClientException):
     def __init__(self):
-        super(DigitalOceanClientNotFound, self).__init__('Not Found')
+        super().__init__('Not Found')
 
 
 class DigitalOceanClientUnauthorized(DigitalOceanClientException):
     def __init__(self):
-        super(DigitalOceanClientUnauthorized, self).__init__('Unauthorized')
+        super().__init__('Unauthorized')
 
 
 class DigitalOceanClient(object):
@@ -114,7 +114,7 @@ class DigitalOceanProvider(BaseProvider):
     def __init__(self, id, token, *args, **kwargs):
         self.log = logging.getLogger(f'DigitalOceanProvider[{id}]')
         self.log.debug('__init__: id=%s, token=***', id)
-        super(DigitalOceanProvider, self).__init__(id, *args, **kwargs)
+        super().__init__(id, *args, **kwargs)
         self._client = DigitalOceanClient(token)
 
         self._zone_records = {}
