@@ -105,7 +105,7 @@ class TestDigitalOceanProvider(TestCase):
         del provider._zone_records[zone.name]
 
     def test_apply(self):
-        provider = DigitalOceanProvider('test', 'token')
+        provider = DigitalOceanProvider('test', 'token', strict_supports=False)
 
         resp = Mock()
         resp.json = Mock()
