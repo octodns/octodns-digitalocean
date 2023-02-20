@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from requests import Session
 
+from octodns import __VERSION__ as octodns_version
 from octodns.provider import ProviderException
 from octodns.provider.base import BaseProvider
 from octodns.record import Record
@@ -33,7 +34,12 @@ class DigitalOceanClient(object):
 
     def __init__(self, token):
         sess = Session()
-        sess.headers.update({'Authorization': f'Bearer {token}'})
+        sess.headers.update(
+            {
+                'Authorization': f'Bearer {token}',
+                'User-Agent': f'octodns/{octodns_version} octodns-digitalocean/{__VERSION__}',
+            }
+        )
         self._sess = sess
 
     def _request(self, method, path, params=None, data=None):
