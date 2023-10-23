@@ -1,0 +1,17 @@
+{
+  "domains": [{
+    "name": "unit.tests",
+    "ttl": 1800,
+    "zone_file": "..."
+  }, {
+    "name": "sub.unit.tests",
+    "ttl": 1800,
+    "zone_file": "..."
+  }],
+  "links": {
+    "pages": {
+      "last": "https://api.digitalocean.com/v2/domains?page=2",
+      "next": "https://api.digitalocean.com/v2/domains?page=2"
+    }
+  }
+}

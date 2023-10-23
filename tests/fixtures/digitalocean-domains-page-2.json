@@ -1,0 +1,17 @@
+{
+  "domains": [{
+    "name": "other.com",
+    "ttl": 1800,
+    "zone_file": "..."
+  }, {
+    "name": "something.farm",
+    "ttl": 3600,
+    "zone_file": "..."
+  }],
+  "links": {
+    "pages": {
+      "first": "https://api.digitalocean.com/v2/domains?page=1",
+      "prev": "https://api.digitalocean.com/v2/domains?page=1"
+    }
+  }
+}
