@@ -52,6 +52,25 @@ class DigitalOceanClient(object):
         resp.raise_for_status()
         return resp
 
+    def domains(self):
+        path = '/domains'
+        ret = []
+
+        page = 1
+        while True:
+            data = self._request('GET', path, {'page': page}).json()
+
+            ret += data['domains']
+            links = data['links']
+
+            try:
+                links['pages']['last']
+                page += 1
+            except KeyError:
+                break
+
+        return ret
+
     def domain(self, name):
         path = f'/domains/{name}'
         return self._request('GET', path).json()
@@ -201,6 +220,11 @@ class DigitalOceanProvider(BaseProvider):
                 return []
 
         return self._zone_records[zone.name]
+
+    def list_zones(self):
+        self.log.debug('list_zones:')
+        domains = [f'{d["name"]}.' for d in self._client.domains()]
+        return sorted(domains)
 
     def populate(self, zone, target=False, lenient=False):
         self.log.debug(

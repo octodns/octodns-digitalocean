@@ -352,3 +352,23 @@ class TestDigitalOceanProvider(TestCase):
             ],
             any_order=True,
         )
+
+    def test_list_zones(self):
+        provider = DigitalOceanProvider('test', 'token')
+
+        with requests_mock() as mock:
+            base = 'https://api.digitalocean.com/v2/domains?page='
+            with open('tests/fixtures/digitalocean-domains-page-1.json') as fh:
+                mock.get(f'{base}1', text=fh.read())
+            with open('tests/fixtures/digitalocean-domains-page-2.json') as fh:
+                mock.get(f'{base}2', text=fh.read())
+
+            self.assertEqual(
+                [
+                    'other.com.',
+                    'something.farm.',
+                    'sub.unit.tests.',
+                    'unit.tests.',
+                ],
+                provider.list_zones(),
+            )
