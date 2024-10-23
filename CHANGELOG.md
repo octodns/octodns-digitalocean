@@ -1,7 +1,7 @@
-## v0.0.2 - 202?-??-?? - Support the root and list the zones
+# v1.0.0 - 2024-??-?? - Support the root and list the zones
 
-* Enable SUPPORTS_ROOT_NS for management of root NS records. Requires
-  octodns>=0.9.16.
+* Address pending octoDNS 2.x deprecations, require minimum of 1.5.x
+* Enable SUPPORTS_ROOT_NS for management of root NS records.
 * Support for Provider.list_zones to enable dynamic zone config when operating
   as a source
 
