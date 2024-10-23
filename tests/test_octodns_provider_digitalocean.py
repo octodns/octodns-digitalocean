@@ -39,7 +39,7 @@ class TestDigitalOceanProvider(TestCase):
     )
     for record in list(expected.records):
         if record.name == 'sub' and record._type == 'NS':
-            expected._remove_record(record)
+            expected.remove_record(record)
             break
 
     def test_populate(self):
@@ -177,7 +177,7 @@ class TestDigitalOceanProvider(TestCase):
         plan = provider.plan(self.expected)
 
         # No ignored, no excluded, no unsupported
-        n = len(self.expected.records) - 9
+        n = len(self.expected.records) - 8
         self.assertEqual(n, len(plan.changes))
         self.assertEqual(n, provider.apply(plan))
         self.assertFalse(plan.exists)
