@@ -22,7 +22,9 @@ from octodns_digitalocean import (
 
 class TestDigitalOceanProvider(TestCase):
     expected = Zone('unit.tests.', [])
-    source = YamlProvider('test', join(dirname(__file__), 'config'))
+    source = YamlProvider(
+        'test', join(dirname(__file__), 'config'), escaped_semicolons=False
+    )
     source.populate(expected)
 
     # Our test suite differs a bit, add our NS and remove the simple one
